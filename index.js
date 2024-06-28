@@ -4,6 +4,14 @@ const { socialTrendsSearcher } = require('./API_Logic/socialTrendsSearcher')
 const app = express()
 const port = 3000
 
+app.get("/", (req,res)=>{
+    try {
+        res.send("Server is Running.")
+    } catch (error) {
+        res.send(error)
+    }
+})
+
 app.get('/socialMentionSearcher', async (req, res) => {
     try {
         const url = "https://www.social-searcher.com/social-buzz/?q5=" + req.query.q;
