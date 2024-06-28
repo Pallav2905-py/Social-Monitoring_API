@@ -1,11 +1,25 @@
 const puppeteer = require('puppeteer');
+require("dotenv").config()
 
-const socialMentionSearcher = async (url, selectors) => {
+const socialMentionSearcher = async (url) => {
+    const browser = await puppeteer.launch({
+        args: [
+            "--disable-setuid-sandbox",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote",
+        ],
+        executablePath:
+            process.env.NODE_ENV === "production"
+                ? process.env.PUPPETEER_EXECUTABLE_PATH
+                : puppeteer.executablePath(),
+    });
+
     try {
-        const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: 'networkidle2' });
 
+        const selectors = [".rezults-item-user__name", ".rezults-item-user__info", ".rezults-item-text", ".rezults-item-text__url"]
         // Mapping of selectors to desired key names
         const keyMap = {
             ".rezults-item-user__name": "name",
@@ -57,6 +71,9 @@ const socialMentionSearcher = async (url, selectors) => {
     } catch (error) {
         console.error('Error scraping data:', error);
         return null;
+    }
+    finally{
+        await browser.close();
     }
 }
 
